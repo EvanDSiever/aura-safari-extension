@@ -33,11 +33,10 @@
       </label>
     </header>
 
-    <!-- Segmented Navigation (Apple HIG 4-tab Pill Bar) -->
+    <!-- Segmented Navigation (Apple HIG Pill Bar) -->
     <nav class="segmented-control" role="tablist">
       <button class="segment active" data-tab="presets" role="tab" aria-selected="true">Presets</button>
       <button class="segment" data-tab="adjust" role="tab" aria-selected="false">Adjust</button>
-      <button class="segment" data-tab="google" role="tab" aria-selected="false">Google</button>
       <button class="segment" data-tab="sites" role="tab" aria-selected="false">Sites</button>
     </nav>
 
@@ -201,119 +200,7 @@
         </div>
       </section>
 
-      <!-- 3. Google Workspace Student Suite View -->
-      <section class="tab-panel" id="tab-google">
-        <div class="site-card">
-          <div class="site-card-header">
-            <div class="site-icon google-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
-              </svg>
-            </div>
-            <div class="site-info">
-              <span class="site-title">Google Student Suite</span>
-              <span class="site-status" id="googleSuiteStatus">Active</span>
-            </div>
-            <label class="apple-switch compact">
-              <input type="checkbox" id="toggleGoogleSuite" checked>
-              <span class="slider"></span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Student Canvas & Comfort Settings -->
-        <div class="settings-group inset-list">
-          <div class="list-item">
-            <div class="item-text">
-              <span class="item-title">Keep Workspace Canvas White</span>
-              <span class="item-subtitle">Darkens UI but keeps document/cells white</span>
-            </div>
-            <label class="apple-switch compact">
-              <input type="checkbox" id="checkKeepCanvasWhite" checked>
-              <span class="slider"></span>
-            </label>
-          </div>
-
-          <!-- Canvas Comfort Dimmer Slider -->
-          <div class="list-item column-item">
-            <div class="control-header" style="width: 100%;">
-              <div class="item-text">
-                <span class="item-title">Canvas Comfort Dimmer</span>
-                <span class="item-subtitle">Soften harsh 100% white glare</span>
-              </div>
-              <span class="control-value" id="valCanvasDim">100%</span>
-            </div>
-            <input type="range" class="apple-range" id="sliderCanvasDim" min="80" max="100" value="100" style="margin-top: 8px;">
-          </div>
-        </div>
-
-        <!-- Theme Style Options -->
-        <div class="settings-group">
-          <div class="control-header">
-            <span class="control-label">
-              <span>Google UI Chrome Style</span>
-            </span>
-          </div>
-          <div class="google-theme-selector">
-            <button class="g-theme-chip active" data-gstyle="graphite">Graphite</button>
-            <button class="g-theme-chip" data-gstyle="oled">OLED Black</button>
-            <button class="g-theme-chip" data-gstyle="midnight">Midnight</button>
-            <button class="g-theme-chip" data-gstyle="sync">Sync Preset</button>
-          </div>
-        </div>
-
-        <!-- Apps Checklist -->
-        <div class="settings-group inset-list">
-          <div class="list-header-label">Enabled Google Apps</div>
-          <div class="list-item app-check-item">
-            <span class="app-name">Google Docs</span>
-            <label class="apple-switch compact">
-              <input type="checkbox" id="gAppDocs" checked>
-              <span class="slider"></span>
-            </label>
-          </div>
-          <div class="list-item app-check-item">
-            <span class="app-name">Google Sheets</span>
-            <label class="apple-switch compact">
-              <input type="checkbox" id="gAppSheets" checked>
-              <span class="slider"></span>
-            </label>
-          </div>
-          <div class="list-item app-check-item">
-            <span class="app-name">Google Drive</span>
-            <label class="apple-switch compact">
-              <input type="checkbox" id="gAppDrive" checked>
-              <span class="slider"></span>
-            </label>
-          </div>
-          <div class="list-item app-check-item">
-            <span class="app-name">Google Slides</span>
-            <label class="apple-switch compact">
-              <input type="checkbox" id="gAppSlides" checked>
-              <span class="slider"></span>
-            </label>
-          </div>
-          <div class="list-item app-check-item">
-            <span class="app-name">Google Classroom</span>
-            <label class="apple-switch compact">
-              <input type="checkbox" id="gAppClassroom" checked>
-              <span class="slider"></span>
-            </label>
-          </div>
-          <div class="list-item app-check-item">
-            <span class="app-name">Google Keep</span>
-            <label class="apple-switch compact">
-              <input type="checkbox" id="gAppKeep" checked>
-              <span class="slider"></span>
-            </label>
-          </div>
-        </div>
-      </section>
-
-      <!-- 4. Exclusion List / Domain Manager View -->
+      <!-- 3. Exclusion List / Domain Manager View -->
       <section class="tab-panel" id="tab-sites">
         <!-- Current Domain Card -->
         <div class="site-card">

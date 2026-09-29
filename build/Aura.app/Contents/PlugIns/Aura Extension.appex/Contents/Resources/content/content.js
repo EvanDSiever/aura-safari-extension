@@ -1,7 +1,6 @@
 /**
  * Aura Content Script
  * High-performance, lightweight color & dark mode engine for Safari
- * Includes dedicated Google Workspace Student Suite Mode
  */
 
 (() => {
@@ -20,25 +19,7 @@
     tintColor: '#ff9500',
     tintOpacity: 0,  // percentage 0 - 100
     smartDetection: true,
-    syncWithSystem: false,
-
-    // Google Workspace Student Suite
-    googleSuite: {
-      enabled: true,
-      keepCanvasWhite: true,
-      canvasBrightness: 100, // 80 - 100%
-      themeStyle: 'graphite', // 'sync', 'graphite', 'oled', 'midnight', 'custom'
-      customBg: '#1e1e1e',
-      customAccent: '#8ab4f8',
-      apps: {
-        docs: true,
-        sheets: true,
-        drive: true,
-        slides: true,
-        classroom: true,
-        keep: true
-      }
-    }
+    syncWithSystem: false
   };
 
   const INVERTED_MODES = new Set(['dark', 'oled', 'midnight']);
@@ -50,7 +31,6 @@
   let overlayElement = null;
 
   const currentHost = window.location.hostname.toLowerCase();
-  const currentPath = window.location.pathname.toLowerCase();
 
   /**
    * Safe storage access wrapper supporting Chrome and Safari WebExtension API
@@ -60,22 +40,6 @@
     : (typeof browser !== 'undefined' && browser.storage && browser.storage.local)
       ? browser.storage.local
       : null;
-
-  /**
-   * Detects if the current page is one of the supported Google Suite applications
-   */
-  function detectGoogleApp() {
-    if (currentHost === 'docs.google.com') {
-      if (currentPath.startsWith('/document')) return 'docs';
-      if (currentPath.startsWith('/spreadsheets')) return 'sheets';
-      if (currentPath.startsWith('/presentation')) return 'slides';
-      return 'docs';
-    }
-    if (currentHost === 'drive.google.com') return 'drive';
-    if (currentHost === 'classroom.google.com') return 'classroom';
-    if (currentHost === 'keep.google.com') return 'keep';
-    return null;
-  }
 
   /**
    * Calculates the perceived relative luminance of an RGB color
@@ -103,10 +67,11 @@
         const b = parseInt(match[3], 10);
         const alpha = match[4] !== undefined ? parseFloat(match[4]) : 1.0;
         
+        // Transparent backgrounds default to browser viewport background (usually light)
         if (alpha < 0.2) return false;
         
         const lum = getLuminance(r, g, b);
-        return lum < 0.22;
+        return lum < 0.22; // Threshold for dark pages (e.g. GitHub Dark, YouTube Dark)
       }
     } catch (e) {
       // Fail safely to light
@@ -133,88 +98,21 @@
   }
 
   /**
-   * Applies Google Workspace specific theme variables and attributes
-   */
-  function applyGoogleSuiteTheme(root, gApp, gConfig) {
-    root.setAttribute('data-aura-google-mode', 'true');
-    root.setAttribute('data-aura-google-app', gApp);
-
-    // Determine theme palette
-    let bg = '#1e1e1e';
-    let surface = '#282828';
-    let border = 'rgba(255, 255, 255, 0.12)';
-    let text = '#e8eaed';
-
-    const style = gConfig.themeStyle || 'graphite';
-    if (style === 'oled') {
-      bg = '#000000';
-      surface = '#121212';
-      border = 'rgba(255, 255, 255, 0.18)';
-    } else if (style === 'midnight') {
-      bg = '#0b1120';
-      surface = '#151e33';
-      border = 'rgba(255, 255, 255, 0.14)';
-    } else if (style === 'custom') {
-      bg = gConfig.customBg || '#1e1e1e';
-      surface = '#282828';
-    } else if (style === 'sync') {
-      if (currentSettings.mode === 'oled') {
-        bg = '#000000';
-        surface = '#121212';
-      } else if (currentSettings.mode === 'midnight') {
-        bg = '#0b1120';
-        surface = '#151e33';
-      } else if (currentSettings.mode === 'sepia') {
-        bg = '#2b261f';
-        surface = '#3d362d';
-      }
-    }
-
-    root.style.setProperty('--aura-g-bg', bg);
-    root.style.setProperty('--aura-g-surface', surface);
-    root.style.setProperty('--aura-g-border', border);
-    root.style.setProperty('--aura-g-text', text);
-    root.style.setProperty('--aura-g-canvas-brightness', ((gConfig.canvasBrightness || 100) / 100).toString());
-
-    // If keepCanvasWhite is true, remove the general inversion filter on html so paper stays original!
-    if (gConfig.keepCanvasWhite) {
-      root.removeAttribute('data-aura-active');
-      root.removeAttribute('data-aura-mode');
-      root.removeAttribute('data-aura-inverted');
-      if (overlayElement) overlayElement.style.opacity = '0';
-    }
-  }
-
-  /**
    * Applies the active visual configuration to document root
    */
   function applyStyles() {
     const root = document.documentElement;
     if (!root) return;
 
-    const gApp = detectGoogleApp();
-    const gConfig = currentSettings.googleSuite || DEFAULT_SETTINGS.googleSuite;
-
     // Check if site is in the exclusion list
     if (isSiteExcluded || !currentSettings.enabled) {
       root.removeAttribute('data-aura-active');
       root.removeAttribute('data-aura-mode');
       root.removeAttribute('data-aura-inverted');
-      root.removeAttribute('data-aura-google-mode');
-      root.removeAttribute('data-aura-google-app');
-      if (overlayElement) overlayElement.style.opacity = '0';
-      return;
-    }
-
-    // Google Suite Handling
-    if (gApp && gConfig && gConfig.enabled && gConfig.apps && gConfig.apps[gApp]) {
-      applyGoogleSuiteTheme(root, gApp, gConfig);
-      if (gConfig.keepCanvasWhite) {
-        return; // Handled cleanly via google-suite.css
+      if (overlayElement) {
+        overlayElement.style.opacity = '0';
       }
-    } else {
-      root.removeAttribute('data-aura-google-mode');
-      root.removeAttribute('data-aura-google-app');
+      return;
     }
 
     // System dark mode synchronization
@@ -233,6 +131,7 @@
     const isInvertedMode = INVERTED_MODES.has(currentSettings.mode);
     if (isInvertedMode && currentSettings.smartDetection && document.body) {
       if (isPageNaturallyDark()) {
+        // Skip inversion if site is already natively dark
         root.removeAttribute('data-aura-active');
         root.removeAttribute('data-aura-mode');
         root.removeAttribute('data-aura-inverted');
@@ -240,7 +139,7 @@
       }
     }
 
-    // Set active attributes for general websites
+    // Set active attributes
     root.setAttribute('data-aura-active', 'true');
     root.setAttribute('data-aura-mode', currentSettings.mode);
 
@@ -262,6 +161,22 @@
     if (overlayElement) {
       overlayElement.style.backgroundColor = currentSettings.tintColor || '#ff9500';
       overlayElement.style.opacity = (currentSettings.tintOpacity / 100).toString();
+    }
+
+    // Specialized handling for Google Docs
+    handleGoogleDocs();
+  }
+
+  /**
+   * Google Docs specialized tweaks for canvas and editor tiles
+   */
+  function handleGoogleDocs() {
+    if (!currentHost.includes('docs.google.com')) return;
+
+    // Wait for editor element if loading
+    const editor = document.querySelector('.kix-appview-editor') || document.querySelector('.docs-editor');
+    if (editor) {
+      editor.setAttribute('data-aura-docs-active', 'true');
     }
   }
 
@@ -332,8 +247,7 @@
             isExcluded: isSiteExcluded,
             hasSiteOverride: !!siteOverrides[currentHost],
             effectiveSettings: currentSettings,
-            isNaturallyDark: isPageNaturallyDark(),
-            googleApp: detectGoogleApp()
+            isNaturallyDark: isPageNaturallyDark()
           });
           break;
 
@@ -343,7 +257,7 @@
           sendResponse({ isExcluded: isSiteExcluded });
           break;
       }
-      return true;
+      return true; // Keep asynchronous response channel open
     });
   }
 
@@ -356,7 +270,7 @@
     });
   }
 
-  // DOM ready hook
+  // Re-check background luminance once DOM is fully ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       ensureOverlay();

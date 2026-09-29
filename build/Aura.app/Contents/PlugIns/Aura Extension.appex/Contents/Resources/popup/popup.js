@@ -1,7 +1,6 @@
 /**
  * Aura Popup Controller
  * Apple HIG-compliant interface logic, real-time messaging, and storage synchronization
- * Includes Google Workspace Student Suite manager
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -17,32 +16,15 @@ document.addEventListener('DOMContentLoaded', () => {
     tintColor: '#ff9500',
     tintOpacity: 0,
     smartDetection: true,
-    syncWithSystem: false,
-
-    // Google Workspace Student Suite
-    googleSuite: {
-      enabled: true,
-      keepCanvasWhite: true,
-      canvasBrightness: 100,
-      themeStyle: 'graphite', // 'graphite', 'oled', 'midnight', 'sync'
-      apps: {
-        docs: true,
-        sheets: true,
-        drive: true,
-        slides: true,
-        classroom: true,
-        keep: true
-      }
-    }
+    syncWithSystem: false
   };
 
   // State
-  let currentSettings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+  let currentSettings = { ...DEFAULT_SETTINGS };
   let siteOverrides = {};
   let excludedDomains = [];
   let currentHost = '';
   let activeTabId = null;
-  let isGoogleApp = false;
 
   // DOM Elements
   const masterToggle = document.getElementById('masterToggle');
@@ -70,24 +52,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const sliderTintOpacity = document.getElementById('sliderTintOpacity');
   const valTintOpacity = document.getElementById('valTintOpacity');
 
-  // General Automation Toggles
+  // Toggles
   const checkSmartDetect = document.getElementById('checkSmartDetect');
   const checkSystemSync = document.getElementById('checkSystemSync');
-
-  // Google Suite Controls
-  const toggleGoogleSuite = document.getElementById('toggleGoogleSuite');
-  const googleSuiteStatus = document.getElementById('googleSuiteStatus');
-  const checkKeepCanvasWhite = document.getElementById('checkKeepCanvasWhite');
-  const sliderCanvasDim = document.getElementById('sliderCanvasDim');
-  const valCanvasDim = document.getElementById('valCanvasDim');
-  const gThemeChips = document.querySelectorAll('.g-theme-chip');
-
-  const gAppDocs = document.getElementById('gAppDocs');
-  const gAppSheets = document.getElementById('gAppSheets');
-  const gAppDrive = document.getElementById('gAppDrive');
-  const gAppSlides = document.getElementById('gAppSlides');
-  const gAppClassroom = document.getElementById('gAppClassroom');
-  const gAppKeep = document.getElementById('gAppKeep');
 
   // Sites View
   const siteCardHost = document.getElementById('siteCardHost');
@@ -116,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
       type: 'AURA_UPDATE_SETTINGS',
       payload: payload
     }).catch(() => {
-      // Ignore if tab is restricted
+      // Tab may be a restricted Safari page (e.g. safari://, start page)
     });
   }
 
@@ -134,29 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
         aura_excluded_domains: excludedDomains
       });
     }, 150);
-  }
-
-  /**
-   * Switches active tab panel
-   */
-  function switchTab(tabName) {
-    segments.forEach(s => {
-      if (s.dataset.tab === tabName) {
-        s.classList.add('active');
-        s.setAttribute('aria-selected', 'true');
-      } else {
-        s.classList.remove('active');
-        s.setAttribute('aria-selected', 'false');
-      }
-    });
-
-    tabPanels.forEach(p => {
-      if (p.id === `tab-${tabName}`) {
-        p.classList.add('active');
-      } else {
-        p.classList.remove('active');
-      }
-    });
   }
 
   /**
@@ -201,34 +145,6 @@ document.addEventListener('DOMContentLoaded', () => {
     checkSmartDetect.checked = currentSettings.smartDetection !== false;
     checkSystemSync.checked = !!currentSettings.syncWithSystem;
 
-    // Google Suite Controls
-    const gConfig = currentSettings.googleSuite || DEFAULT_SETTINGS.googleSuite;
-    toggleGoogleSuite.checked = gConfig.enabled !== false;
-    googleSuiteStatus.textContent = gConfig.enabled ? 'Active' : 'Disabled';
-    googleSuiteStatus.className = gConfig.enabled ? 'site-status' : 'site-status excluded';
-
-    checkKeepCanvasWhite.checked = gConfig.keepCanvasWhite !== false;
-    sliderCanvasDim.value = gConfig.canvasBrightness || 100;
-    valCanvasDim.textContent = `${gConfig.canvasBrightness || 100}%`;
-
-    // Google Theme Chips
-    gThemeChips.forEach(chip => {
-      if (chip.dataset.gstyle === (gConfig.themeStyle || 'graphite')) {
-        chip.classList.add('active');
-      } else {
-        chip.classList.remove('active');
-      }
-    });
-
-    // Google App Checkboxes
-    const apps = gConfig.apps || DEFAULT_SETTINGS.googleSuite.apps;
-    gAppDocs.checked = apps.docs !== false;
-    gAppSheets.checked = apps.sheets !== false;
-    gAppDrive.checked = apps.drive !== false;
-    gAppSlides.checked = apps.slides !== false;
-    gAppClassroom.checked = apps.classroom !== false;
-    gAppKeep.checked = apps.keep !== false;
-
     // Sites Tab info
     if (currentHost) {
       siteCardHost.textContent = currentHost;
@@ -242,8 +158,8 @@ document.addEventListener('DOMContentLoaded', () => {
         btnToggleSiteExclusion.textContent = 'Exclude This Site';
       }
     } else {
-      siteCardHost.textContent = 'Safari Page';
-      siteCardStatus.textContent = 'Ready';
+      siteCardHost.textContent = 'System / New Tab';
+      siteCardStatus.textContent = 'Not Applicable';
       btnToggleSiteExclusion.disabled = true;
     }
 
@@ -288,6 +204,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  /**
+   * Removes a domain from exclusion list
+   */
   function removeExcludedDomain(domain) {
     excludedDomains = excludedDomains.filter(d => d !== domain);
     saveSettings();
@@ -295,6 +214,9 @@ document.addEventListener('DOMContentLoaded', () => {
     notifyActiveTab({ isExcluded: false });
   }
 
+  /**
+   * Adds a domain to exclusion list
+   */
   function addExcludedDomain(domain) {
     const clean = domain.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
     if (!clean) return;
@@ -311,7 +233,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Segmented Control Navigation
   segments.forEach(seg => {
     seg.addEventListener('click', () => {
-      switchTab(seg.dataset.tab);
+      segments.forEach(s => s.classList.remove('active'));
+      tabPanels.forEach(p => p.classList.remove('active'));
+
+      seg.classList.add('active');
+      const targetPanel = document.getElementById(`tab-${seg.dataset.tab}`);
+      if (targetPanel) {
+        targetPanel.classList.add('active');
+      }
     });
   });
 
@@ -320,6 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const isExcluded = excludedDomains.some(d => currentHost === d || currentHost.endsWith('.' + d));
 
     if (isExcluded) {
+      // If user flipped toggle while site was excluded, unexclude it!
       excludedDomains = excludedDomains.filter(d => d !== currentHost);
       currentSettings.enabled = true;
     } else {
@@ -337,6 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const mode = card.dataset.preset;
       currentSettings.mode = mode;
 
+      // Adjust defaults per preset for a great instant visual feel
       if (mode === 'sepia') {
         currentSettings.sepia = 60;
         currentSettings.brightness = 96;
@@ -361,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Slider Listeners
+  // Slider Listeners with Real-time feedback
   function bindSlider(slider, labelEl, key, suffix = '%') {
     slider.addEventListener('input', () => {
       const val = parseInt(slider.value, 10);
@@ -387,6 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
       customPresetSwatch.style.backgroundColor = color;
     }
 
+    // Auto-increase tint opacity slightly if it was 0 so user sees effect
     if (currentSettings.tintOpacity === 0) {
       currentSettings.tintOpacity = 20;
       sliderTintOpacity.value = 20;
@@ -397,7 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
     saveSettings();
   });
 
-  // Smart Detect & System Sync
+  // Smart Detect Switch
   checkSmartDetect.addEventListener('change', () => {
     currentSettings.smartDetection = checkSmartDetect.checked;
     renderUI();
@@ -405,6 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
     notifyActiveTab(currentSettings);
   });
 
+  // System Sync Switch
   checkSystemSync.addEventListener('change', () => {
     currentSettings.syncWithSystem = checkSystemSync.checked;
     renderUI();
@@ -412,69 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
     notifyActiveTab(currentSettings);
   });
 
-  // Google Suite Event Handlers
-  function ensureGoogleSuiteState() {
-    if (!currentSettings.googleSuite) {
-      currentSettings.googleSuite = JSON.parse(JSON.stringify(DEFAULT_SETTINGS.googleSuite));
-    }
-  }
-
-  toggleGoogleSuite.addEventListener('change', () => {
-    ensureGoogleSuiteState();
-    currentSettings.googleSuite.enabled = toggleGoogleSuite.checked;
-    renderUI();
-    saveSettings();
-    notifyActiveTab(currentSettings);
-  });
-
-  checkKeepCanvasWhite.addEventListener('change', () => {
-    ensureGoogleSuiteState();
-    currentSettings.googleSuite.keepCanvasWhite = checkKeepCanvasWhite.checked;
-    renderUI();
-    saveSettings();
-    notifyActiveTab(currentSettings);
-  });
-
-  sliderCanvasDim.addEventListener('input', () => {
-    ensureGoogleSuiteState();
-    const val = parseInt(sliderCanvasDim.value, 10);
-    valCanvasDim.textContent = `${val}%`;
-    currentSettings.googleSuite.canvasBrightness = val;
-    notifyActiveTab(currentSettings);
-    saveSettings();
-  });
-
-  gThemeChips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      ensureGoogleSuiteState();
-      currentSettings.googleSuite.themeStyle = chip.dataset.gstyle;
-      renderUI();
-      saveSettings();
-      notifyActiveTab(currentSettings);
-    });
-  });
-
-  function bindGoogleAppCheckbox(checkbox, appKey) {
-    checkbox.addEventListener('change', () => {
-      ensureGoogleSuiteState();
-      if (!currentSettings.googleSuite.apps) {
-        currentSettings.googleSuite.apps = { ...DEFAULT_SETTINGS.googleSuite.apps };
-      }
-      currentSettings.googleSuite.apps[appKey] = checkbox.checked;
-      renderUI();
-      saveSettings();
-      notifyActiveTab(currentSettings);
-    });
-  }
-
-  bindGoogleAppCheckbox(gAppDocs, 'docs');
-  bindGoogleAppCheckbox(gAppSheets, 'sheets');
-  bindGoogleAppCheckbox(gAppDrive, 'drive');
-  bindGoogleAppCheckbox(gAppSlides, 'slides');
-  bindGoogleAppCheckbox(gAppClassroom, 'classroom');
-  bindGoogleAppCheckbox(gAppKeep, 'keep');
-
-  // Sites Handlers
+  // Toggle Current Site Button
   btnToggleSiteExclusion.addEventListener('click', () => {
     if (!currentHost) return;
     const isExcluded = excludedDomains.some(d => currentHost === d || currentHost.endsWith('.' + d));
@@ -490,6 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
     notifyActiveTab({ isExcluded: !isExcluded });
   });
 
+  // Add Domain Form
   addDomainForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const val = inputNewDomain.value;
@@ -499,9 +371,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Reset Button
   btnResetDefaults.addEventListener('click', () => {
     if (confirm('Reset all Aura settings to default?')) {
-      currentSettings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+      currentSettings = { ...DEFAULT_SETTINGS };
       excludedDomains = [];
       saveSettings();
       renderUI();
@@ -518,16 +391,6 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         currentHost = new URL(tabs[0].url).hostname.toLowerCase();
         currentDomainBadge.textContent = currentHost;
-
-        // Auto-detect Google Workspace app
-        if (
-          currentHost.includes('docs.google.com') ||
-          currentHost.includes('drive.google.com') ||
-          currentHost.includes('classroom.google.com') ||
-          currentHost.includes('keep.google.com')
-        ) {
-          isGoogleApp = true;
-        }
       } catch (e) {
         currentDomainBadge.textContent = 'Safari Page';
       }
@@ -539,12 +402,6 @@ document.addEventListener('DOMContentLoaded', () => {
       storage.get(['aura_settings', 'aura_site_settings', 'aura_excluded_domains'], (res) => {
         if (res.aura_settings) {
           currentSettings = { ...DEFAULT_SETTINGS, ...res.aura_settings };
-          if (res.aura_settings.googleSuite) {
-            currentSettings.googleSuite = {
-              ...DEFAULT_SETTINGS.googleSuite,
-              ...res.aura_settings.googleSuite
-            };
-          }
         }
         if (res.aura_site_settings) {
           siteOverrides = res.aura_site_settings;
@@ -552,19 +409,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (res.aura_excluded_domains) {
           excludedDomains = res.aura_excluded_domains;
         }
-
         renderUI();
-
-        // If the student opened the extension while on Google Docs/Drive/Sheets, open Google tab by default!
-        if (isGoogleApp) {
-          switchTab('google');
-        }
       });
     } else {
       renderUI();
-      if (isGoogleApp) {
-        switchTab('google');
-      }
     }
   });
 });

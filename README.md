@@ -1,14 +1,21 @@
 # Aura — Safari Web Extension
 > **Ultra-lightweight, seamless website color adjuster & smart dark mode crafted with Apple Human Interface Guidelines.**
+> Now featuring the **Google Workspace Student Suite**!
 
 ---
 
 ## ✨ Features at a Glance
 
 - **Apple Safari Native Aesthetic**: Frosted acrylic translucency (`backdrop-filter: blur(28px)`), SF Pro typography, native segmented controls, and Apple system toggles. Looks and feels like a native macOS Safari menu, not a cheap third-party add-on.
-- **Smart Dark Mode**:
+- 🎓 **Google Workspace Student Suite (New!)**:
+  - **Preserves Workspace Canvas**: Darkens the surrounding toolbars, menubars, sidebars, and background chrome across **Google Docs, Sheets, Drive, Slides, Classroom, and Keep**, while **keeping the document paper, slide canvas, and spreadsheet cells pristine white**!
+  - **Printing & Color Accuracy**: Text formatting, colored annotations, and highlighters (yellow, green, pink) stay completely natural without color inversion distortion.
+  - **Canvas Comfort Dimmer**: Optional slider (80% – 100%) to gently soften blinding 100% white glare at night without inverting colors.
+  - **Chrome Theme Styles**: Choose between *macOS Graphite Dark* (`#1e1e1e`), *OLED Pure Black* (`#000000`), *Midnight Navy* (`#0b1120`), or *Sync with Aura Preset*.
+  - **Individual App Toggles**: Enable or disable per app (Docs, Sheets, Drive, Slides, Classroom, Keep).
+  - **Automatic Detection**: Automatically switches to the Google Suite tab in the popup when visiting any Google Workspace product.
+- **Smart Dark Mode & General Color Engine**:
   - Automatically analyzes page luminance to detect naturally dark sites (e.g. GitHub Dark, YouTube Dark) and avoids double-inverting them.
-  - Specialized compatibility for **Google Docs**, **Google Sheets**, and bright web apps.
   - Media & image preservation: Photos, videos, svgs, and canvas tiles retain their authentic colors without looking like negative film.
 - **Built-in Visual Presets**:
   - 🌙 **Classic Dark**: High-contrast, clean night palette.
@@ -37,7 +44,7 @@
 
 ```
 Visualizer/
-├── manifest.json             # Manifest V3 extension configuration
+├── manifest.json             # Manifest V3 extension configuration (v1.1.0)
 ├── icons/                    # High-DPI icons (16, 32, 48, 128) & vector SVG
 │   ├── icon.svg
 │   ├── icon-16.png
@@ -45,51 +52,35 @@ Visualizer/
 │   ├── icon-48.png
 │   └── icon-128.png
 ├── popup/
-│   ├── popup.html            # Apple HIG popup layout
+│   ├── popup.html            # Apple HIG popup layout (Presets, Adjust, Google, Sites)
 │   ├── popup.css             # Native Safari styling & SF Pro design system
-│   └── popup.js              # Real-time control, storage sync & domain manager
+│   └── popup.js              # Real-time control, storage sync & Google Suite manager
 ├── content/
 │   ├── content.css           # Hardware-accelerated filters & media protection
-│   └── content.js            # Smart background detection, docs hooks, style injector
+│   ├── google-suite.css      # Dedicated Google Docs, Sheets, Drive, Classroom styles
+│   └── content.js            # Smart background detection, Google app hook, style injector
 ├── background/
 │   └── background.js         # Keyboard shortcut listener & sync worker
-├── demo.html                 # Interactive test suite & Google Docs simulation
-├── build-app.sh              # Verification & quick launcher script
+├── demo.html                 # Interactive test suite with Google Docs simulation
+├── package-mac-app.sh        # Native macOS app packager & PlugInKit registration
 └── README.md                 # Documentation
 ```
 
 ---
 
-## 🚀 How to Load and Use in Safari
+## 🚀 How to Enable in Safari
 
-Follow these quick steps to load Aura directly into Safari:
-
-### Step 1: Enable Safari Developer Features
-1. Open **Safari**.
-2. Open Safari Settings by pressing <kbd>⌘</kbd> + <kbd>,</kbd> (or click **Safari** in the menu bar > **Settings...**).
-3. Select the **Advanced** tab.
-4. Check the box for **"Show features for web developers"** (or **"Show Develop menu in menu bar"**).
-
-### Step 2: Allow Unsigned Extensions
-1. In the macOS top menu bar, click **Develop**.
-2. Click **Allow Unsigned Extensions** (enter your Mac password if prompted).
-
-### Step 3: Enable Aura in Extensions Settings
-1. Go to **Safari** > **Settings** > **Extensions** tab.
-2. Locate **Aura** in the left sidebar and check its checkbox to activate it.
-3. Under permissions, select **"Always Allow on Every Website"** so Aura can adjust colors across all tabs seamlessly.
+1. **Quit and Reopen Safari** (press <kbd>⌘</kbd> + <kbd>Q</kbd>, then reopen).
+2. Ensure **Develop** > **Allow Unsigned Extensions** is checked.
+3. Open **Safari Settings** (<kbd>⌘</kbd> + <kbd>,</kbd>) > **Extensions** tab.
+4. Check the box next to **Aura** and select **"Always Allow on Every Website"**.
 
 ---
 
 ## 🧪 Testing with the Built-in Demo
 
-An interactive demo page is included to test all features:
-1. In Safari, open `demo.html` located in this directory:
-   ```
-   file:///Users/SievesOk/Documents/Antigravity Projects/Visualizer/demo.html
-   ```
-2. Click the **Aura** icon in your Safari toolbar.
-3. Test switching between **Classic Dark**, **OLED Black**, **Warm Sepia**, and **Midnight Blue**.
-4. Test adjusting **Brightness**, **Contrast**, and the **Color Tint** picker.
-5. Notice how the simulated Google Docs page turns dark while the colorful test image preserves its natural colors.
-6. Press <kbd>⌥</kbd> + <kbd>⇧</kbd> + <kbd>D</kbd> to toggle the extension on and off.
+Open the updated demo page in Safari:
+```
+file:///Users/SievesOk/Documents/Antigravity Projects/Visualizer/demo.html
+```
+You can see the simulated Google Docs page with dark toolbars and a clean, non-inverted white paper page with yellow and green text highlighters preserved!

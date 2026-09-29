@@ -1,0 +1,217 @@
+/**
+ * Aura — Google Workspace Student Theme Stylesheet
+ * Consistent dark chrome across Google Drive, Docs, Sheets, Slides, Classroom & Keep
+ * CRITICAL RULE: The actual document canvas / paper / sheets grid stays natural white/uninverted!
+ */
+
+:root {
+  --aura-g-bg: #1e1e1e;
+  --aura-g-surface: #282828;
+  --aura-g-surface-hover: #333333;
+  --aura-g-border: rgba(255, 255, 255, 0.12);
+  --aura-g-text: #e8eaed;
+  --aura-g-text-secondary: #9aa0a6;
+  --aura-g-accent: #8ab4f8;
+  --aura-g-canvas-brightness: 1;
+}
+
+/* ==========================================================================
+   1. GOOGLE DOCS (docs.google.com/document)
+   ========================================================================== */
+html[data-aura-google-mode="true"][data-aura-google-app="docs"] {
+  background-color: var(--aura-g-bg) !important;
+}
+
+/* Toolbars, menubars, and top chrome */
+html[data-aura-google-mode="true"][data-aura-google-app="docs"] #docs-chrome,
+html[data-aura-google-mode="true"][data-aura-google-app="docs"] #docs-header,
+html[data-aura-google-mode="true"][data-aura-google-app="docs"] .docs-titlebar-buttons,
+html[data-aura-google-mode="true"][data-aura-google-app="docs"] .docs-material-menubar,
+html[data-aura-google-mode="true"][data-aura-google-app="docs"] .goog-toolbar,
+html[data-aura-google-mode="true"][data-aura-google-app="docs"] #kix-horizontal-ruler,
+html[data-aura-google-mode="true"][data-aura-google-app="docs"] #kix-vertical-ruler,
+html[data-aura-google-mode="true"][data-aura-google-app="docs"] .docs-explore-widget {
+  background: var(--aura-g-surface) !important;
+  color: var(--aura-g-text) !important;
+  border-color: var(--aura-g-border) !important;
+}
+
+/* Background behind the paper pages (the gray app view area) */
+html[data-aura-google-mode="true"][data-aura-google-app="docs"] .kix-appview-editor,
+html[data-aura-google-mode="true"][data-aura-google-app="docs"] #kix-appview {
+  background-color: var(--aura-g-bg) !important;
+}
+
+/* Dropdown menus, dialogs, and popups */
+html[data-aura-google-mode="true"][data-aura-google-app="docs"] .goog-menu,
+html[data-aura-google-mode="true"][data-aura-google-app="docs"] .docs-material-menu-item,
+html[data-aura-google-mode="true"][data-aura-google-app="docs"] .modal-dialog,
+html[data-aura-google-mode="true"][data-aura-google-app="docs"] .docs-bubble {
+  background-color: var(--aura-g-surface) !important;
+  color: var(--aura-g-text) !important;
+  border-color: var(--aura-g-border) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+}
+
+html[data-aura-google-mode="true"][data-aura-google-app="docs"] .goog-menuitem-content {
+  color: var(--aura-g-text) !important;
+}
+
+/* Toolbar icons and buttons text */
+html[data-aura-google-mode="true"][data-aura-google-app="docs"] .goog-toolbar-button,
+html[data-aura-google-mode="true"][data-aura-google-app="docs"] .goog-toolbar-menu-button {
+  filter: invert(0.85) hue-rotate(180deg);
+}
+
+/* THE DOCUMENT PAGE CANVAS (PRESERVED CLEAN WHITE) */
+html[data-aura-google-mode="true"][data-aura-google-app="docs"] .kix-page,
+html[data-aura-google-mode="true"][data-aura-google-app="docs"] .kix-page-paginated,
+html[data-aura-google-mode="true"][data-aura-google-app="docs"] .kix-page-compact {
+  background-color: #ffffff !important;
+  filter: brightness(var(--aura-g-canvas-brightness, 1)) !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* Ensure canvas text tiles inside the page are untouched */
+html[data-aura-google-mode="true"][data-aura-google-app="docs"] .kix-canvas-tile-content {
+  filter: none !important;
+}
+
+/* Document Title */
+html[data-aura-google-mode="true"][data-aura-google-app="docs"] .docs-title-input {
+  color: var(--aura-g-text) !important;
+  background: transparent !important;
+}
+
+/* ==========================================================================
+   2. GOOGLE SHEETS (docs.google.com/spreadsheets)
+   ========================================================================== */
+html[data-aura-google-mode="true"][data-aura-google-app="sheets"] {
+  background-color: var(--aura-g-bg) !important;
+}
+
+html[data-aura-google-mode="true"][data-aura-google-app="sheets"] #docs-chrome,
+html[data-aura-google-mode="true"][data-aura-google-app="sheets"] #formula-bar,
+html[data-aura-google-mode="true"][data-aura-google-app="sheets"] .formula-bar-separator,
+html[data-aura-google-mode="true"][data-aura-google-app="sheets"] #grid-bottom-bar,
+html[data-aura-google-mode="true"][data-aura-google-app="sheets"] .docs-sheet-tab {
+  background: var(--aura-g-surface) !important;
+  color: var(--aura-g-text) !important;
+  border-color: var(--aura-g-border) !important;
+}
+
+/* Sheet Grid: KEEP NATURAL WHITE CANVAS */
+html[data-aura-google-mode="true"][data-aura-google-app="sheets"] #grid-table-container,
+html[data-aura-google-mode="true"][data-aura-google-app="sheets"] .grid-container {
+  filter: brightness(var(--aura-g-canvas-brightness, 1)) !important;
+}
+
+/* ==========================================================================
+   3. GOOGLE DRIVE (drive.google.com)
+   ========================================================================== */
+html[data-aura-google-mode="true"][data-aura-google-app="drive"] body {
+  background-color: var(--aura-g-bg) !important;
+  color: var(--aura-g-text) !important;
+}
+
+/* Search bar, top navigation header */
+html[data-aura-google-mode="true"][data-aura-google-app="drive"] header,
+html[data-aura-google-mode="true"][data-aura-google-app="drive"] form[role="search"],
+html[data-aura-google-mode="true"][data-aura-google-app="drive"] .gb_Ja {
+  background: var(--aura-g-surface) !important;
+  border-color: var(--aura-g-border) !important;
+}
+
+/* Left Sidebar Navigation */
+html[data-aura-google-mode="true"][data-aura-google-app="drive"] nav,
+html[data-aura-google-mode="true"][data-aura-google-app="drive"] [role="navigation"] {
+  background: var(--aura-g-bg) !important;
+  color: var(--aura-g-text) !important;
+}
+
+/* Main File Browser & Grid Container */
+html[data-aura-google-mode="true"][data-aura-google-app="drive"] [role="main"],
+html[data-aura-google-mode="true"][data-aura-google-app="drive"] .c-E-D {
+  background-color: var(--aura-g-bg) !important;
+}
+
+/* File items & list rows */
+html[data-aura-google-mode="true"][data-aura-google-app="drive"] [role="row"],
+html[data-aura-google-mode="true"][data-aura-google-app="drive"] [role="gridcell"] {
+  border-color: var(--aura-g-border) !important;
+}
+
+/* Keep file previews and thumbnails natural */
+html[data-aura-google-mode="true"][data-aura-google-app="drive"] img,
+html[data-aura-google-mode="true"][data-aura-google-app="drive"] [role="img"] {
+  filter: none !important;
+}
+
+/* ==========================================================================
+   4. GOOGLE SLIDES (docs.google.com/presentation)
+   ========================================================================== */
+html[data-aura-google-mode="true"][data-aura-google-app="slides"] {
+  background-color: var(--aura-g-bg) !important;
+}
+
+html[data-aura-google-mode="true"][data-aura-google-app="slides"] #docs-chrome,
+html[data-aura-google-mode="true"][data-aura-google-app="slides"] .filmstrip {
+  background: var(--aura-g-surface) !important;
+  border-color: var(--aura-g-border) !important;
+}
+
+/* Slide Editor: Keep the actual slide presentation canvas original white/natural */
+html[data-aura-google-mode="true"][data-aura-google-app="slides"] .punch-filmstrip-thumbnail,
+html[data-aura-google-mode="true"][data-aura-google-app="slides"] .punch-viewer-svgpage,
+html[data-aura-google-mode="true"][data-aura-google-app="slides"] .punch-full-window-overlay {
+  filter: brightness(var(--aura-g-canvas-brightness, 1)) !important;
+}
+
+/* ==========================================================================
+   5. GOOGLE CLASSROOM (classroom.google.com)
+   ========================================================================== */
+html[data-aura-google-mode="true"][data-aura-google-app="classroom"] body {
+  background-color: var(--aura-g-bg) !important;
+  color: var(--aura-g-text) !important;
+}
+
+/* Top bar, stream cards, assignments */
+html[data-aura-google-mode="true"][data-aura-google-app="classroom"] header,
+html[data-aura-google-mode="true"][data-aura-google-app="classroom"] nav,
+html[data-aura-google-mode="true"][data-aura-google-app="classroom"] [role="region"],
+html[data-aura-google-mode="true"][data-aura-google-app="classroom"] .A657If,
+html[data-aura-google-mode="true"][data-aura-google-app="classroom"] [role="article"] {
+  background: var(--aura-g-surface) !important;
+  border-color: var(--aura-g-border) !important;
+  color: var(--aura-g-text) !important;
+}
+
+/* Assignment text and card titles */
+html[data-aura-google-mode="true"][data-aura-google-app="classroom"] a,
+html[data-aura-google-mode="true"][data-aura-google-app="classroom"] h2,
+html[data-aura-google-mode="true"][data-aura-google-app="classroom"] h3 {
+  color: var(--aura-g-text) !important;
+}
+
+/* ==========================================================================
+   6. GOOGLE KEEP (keep.google.com)
+   ========================================================================== */
+html[data-aura-google-mode="true"][data-aura-google-app="keep"] body {
+  background-color: var(--aura-g-bg) !important;
+  color: var(--aura-g-text) !important;
+}
+
+/* Search bar and navigation drawer */
+html[data-aura-google-mode="true"][data-aura-google-app="keep"] header,
+html[data-aura-google-mode="true"][data-aura-google-app="keep"] nav,
+html[data-aura-google-mode="true"][data-aura-google-app="keep"] [role="navigation"] {
+  background: var(--aura-g-surface) !important;
+  border-color: var(--aura-g-border) !important;
+}
+
+/* Note cards container */
+html[data-aura-google-mode="true"][data-aura-google-app="keep"] .IZ65Hb-n0tg cohesion-card {
+  background: var(--aura-g-surface) !important;
+  border-color: var(--aura-g-border) !important;
+  color: var(--aura-g-text) !important;
+}

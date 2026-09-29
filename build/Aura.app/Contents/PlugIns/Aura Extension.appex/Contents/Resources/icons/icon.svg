@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1c1c1e" />
+      <stop offset="100%" stop-color="#2c2c2e" />
+    </linearGradient>
+    <linearGradient id="warmSun" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF9500" />
+      <stop offset="100%" stop-color="#FF5E3A" />
+    </linearGradient>
+    <linearGradient id="coolMoon" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5856D6" />
+      <stop offset="100%" stop-color="#007AFF" />
+    </linearGradient>
+  </defs>
+
+  <!-- Outer squircle / background container -->
+  <rect x="8" y="8" width="112" height="112" rx="26" fill="url(#bgGrad)" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
+
+  <!-- Left Side: Cool Moon / Dark Mode Crescent -->
+  <path d="M 64 24 A 40 40 0 0 0 64 104 Z" fill="url(#coolMoon)" />
+
+  <!-- Right Side: Warm Sun / Visualizer Aura -->
+  <path d="M 64 24 A 40 40 0 0 1 64 104 Z" fill="url(#warmSun)" />
+
+  <!-- Center divider subtle notch -->
+  <line x1="64" y1="20" x2="64" y2="108" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-opacity="0.3"/>
+
+  <!-- Center eye / iris highlight ring -->
+  <circle cx="64" cy="64" r="14" fill="#1c1c1e" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
+  <circle cx="64" cy="64" r="6" fill="#ffffff" />
+</svg>
